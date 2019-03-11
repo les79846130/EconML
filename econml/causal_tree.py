@@ -12,30 +12,7 @@ import warnings
 from sklearn.model_selection import train_test_split
 from sklearn.utils import check_random_state
 import scipy.special
-
-
-class Node:
-    """Building block of `CausalTree` class.
-
-    Parameters
-    ----------
-    sample_inds : array-like, shape (n, )
-        Indices defining the sample that the split criterion will be computed on.
-
-    estimate_inds : array-like, shape (n, )
-        Indices defining the sample used for calculating balance criteria.
-
-    """
-
-    def __init__(self, sample_inds, estimate_inds):
-        self.feature = -1
-        self.threshold = np.inf
-        self.split_sample_inds = sample_inds
-        self.est_sample_inds = estimate_inds
-        self.estimate = None
-        self.left = None
-        self.right = None
-
+from .causal_tree_node import Node
 
 class CausalTree:
     """Base class for growing an `OrthoTree`.
@@ -281,13 +258,5 @@ class CausalTree:
     def print_tree(self):
         self.print_tree_rec(self.tree)
 
-    def find_tree_node(self, node, value):
-        if node.feature == -1:
-            return node
-        elif value[node.feature] < node.threshold:
-            return self.find_tree_node(node.left, value)
-        else:
-            return self.find_tree_node(node.right, value)
-
     def find_split(self, value):
-        return self.find_tree_node(self.tree, value)
+        return self.tree.find_tree_node(value)
